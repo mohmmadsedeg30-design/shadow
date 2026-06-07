@@ -23,8 +23,9 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import hashlib
 import struct
+import time
 
-__version__ = "2.1.0"
+__version__ = "2.2.0"
 __author__ = "mohmmadsedeg30-design"
 
 # ═══════════════════════════════════════════════════════════════
@@ -292,11 +293,14 @@ class ShadowCLI:
         else:
             return
 
-        out_name = input(f"{Colors.YELLOW}[?]{Colors.END} Output Name (e.g., secret.png): ").strip()
-        if not out_name.endswith('.png'):
-            out_name += '.png'
+        out_name = input(f"{Colors.YELLOW}[?]{Colors.END} Output Name (e.g., secret): ").strip()
+        if out_name.endswith('.png'):
+            out_name = out_name[:-4]
         
-        output_path = os.path.join(self.output_dir, out_name)
+        # Add Unique ID (Timestamp)
+        unique_id = time.strftime("%Y%m%d_%H%M%S")
+        final_name = f"{out_name}_{unique_id}.png"
+        output_path = os.path.join(self.output_dir, final_name)
 
         password = None
         use_pass = input(f"{Colors.YELLOW}[?]{Colors.END} Use Password? (y/n): ").strip().lower()
@@ -324,7 +328,17 @@ class ShadowCLI:
             password = getpass(f"{Colors.YELLOW}[?]{Colors.END} Password: ")
 
         out_name = input(f"{Colors.YELLOW}[?]{Colors.END} Save result as (e.g., data.txt): ").strip()
-        output_path = os.path.join(self.output_dir, out_name) if out_name else None
+        if out_name:
+            # Add Unique ID to extracted files too
+            unique_id = time.strftime("%Y%m%d_%H%M%S")
+            if '.' in out_name:
+                name_part, ext_part = out_name.rsplit('.', 1)
+                final_name = f"{name_part}_{unique_id}.{ext_part}"
+            else:
+                final_name = f"{out_name}_{unique_id}"
+            output_path = os.path.join(self.output_dir, final_name)
+        else:
+            output_path = None
 
         print(f"\n{Colors.CYAN}[*] Extracting data...{Colors.END}")
         result = SteganoEngine.extract(stego, output_path, password)
