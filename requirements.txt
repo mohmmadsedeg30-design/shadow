@@ -1,0 +1,12 @@
+# Shadow Steganography Tool - Dependencies
+# Install: pip install -r requirements.txt
+
+# Core
+Pillow>=10.0.0          # معالجة الصور
+numpy>=1.24.0           # العمليات الرقمية
+
+# Security
+cryptography>=41.0.0    # تشفير AES + PBKDF2
+
+# Optional (for advanced features)
+# rich>=13.0.0          # واجهة ملونة متقدمة (اختياري)
